@@ -10,6 +10,7 @@ RUN set -ex \
         libpcre3 \
         libpq5 \
         mime-support \
+        postgresql-client \
         procps \
         zlib1g \
     " \
@@ -56,7 +57,7 @@ ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
 ENV UWSGI_STATIC_MAP="/media/=/code/bakerydemo/media/"
 
 # Call collectstatic with dummy environment variables:
-RUN DATABASE_URL=sqlite:///deleteme.db REDIS_URL=none /venv/bin/python manage.py collectstatic --noinput
+RUN DATABASE_URL=postgres://none REDIS_URL=none /venv/bin/python manage.py collectstatic --noinput
 
 # make sure static files are writable by uWSGI process
 RUN mkdir -p /code/bakerydemo/media/images && chown -R 1000:2000 /code/bakerydemo/media &&\
