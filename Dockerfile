@@ -10,7 +10,6 @@ RUN set -ex \
         libpcre3 \
         libpq5 \
         mime-support \
-        postgresql-client \
         procps \
         zlib1g \
     " \
