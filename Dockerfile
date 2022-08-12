@@ -48,7 +48,7 @@ ENV DJANGO_SETTINGS_MODULE=bakerydemo.settings.production DJANGO_DEBUG=off
 ENV UWSGI_WSGI_FILE=bakerydemo/wsgi.py
 
 # Base uWSGI configuration (you shouldn't need to change these):
-ENV UWSGI_VIRTUALENV=/venv UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_HTTP_KEEPALIVE=1 UWSGI_UID=1000 UWSGI_GID=2000 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
+ENV UWSGI_VIRTUALENV=/venv UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_HTTP_KEEPALIVE=1 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
 
 # Number of uWSGI workers and threads per worker (customize as needed):
 ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
@@ -66,7 +66,6 @@ RUN mkdir -p /code/bakerydemo/media/images && chown -R 1000:2000 /code/bakerydem
 # mark the destination for images as a volume
 VOLUME ["/code/bakerydemo/media/images/"]
 
-USER 1000:2000
 # start uWSGI, using a wrapper script to allow us to easily add more commands to container startup:
 ENTRYPOINT ["/code/docker-entrypoint.sh"]
 
