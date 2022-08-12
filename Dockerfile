@@ -60,11 +60,13 @@ ENV UWSGI_STATIC_MAP="/media/=/code/bakerydemo/media/"
 RUN DATABASE_URL=postgres://none REDIS_URL=none /venv/bin/python manage.py collectstatic --noinput
 
 # make sure static files are writable by uWSGI process
-RUN mkdir -p /code/bakerydemo/media/images && chown -R 1000:2000 /code/bakerydemo/media
+RUN mkdir -p /code/bakerydemo/media/images && chown -R 1000:2000 /code/bakerydemo/media &&\
+    mkdir -p /code/bakerydemo/db && chown -R 1000:2000 /code/bakerydemo/db
 
 # mark the destination for images as a volume
 VOLUME ["/code/bakerydemo/media/images/"]
 
+USER 1000:2000
 # start uWSGI, using a wrapper script to allow us to easily add more commands to container startup:
 ENTRYPOINT ["/code/docker-entrypoint.sh"]
 
