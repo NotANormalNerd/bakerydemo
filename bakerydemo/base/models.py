@@ -1,20 +1,23 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.translation import gettext as _
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Collection, Page, TranslatableMixin
+from wagtail.models import Collection, Page, PreviewableMixin, TranslatableMixin
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+
+from bakerydemo.blog.models import BlogPage
 
 from .blocks import BaseStreamBlock
 
 
 @register_snippet
-class People(index.Indexed, ClusterableModel):
+class People(PreviewableMixin, index.Indexed, ClusterableModel):
     """
     A Django model to store People objects.
     It uses the `@register_snippet` decorator to allow it to be accessible
@@ -70,8 +73,33 @@ class People(index.Indexed, ClusterableModel):
         except:  # noqa: E722 FIXME: remove bare 'except:'
             return ""
 
+    @property
+    def preview_modes(self):
+        return PreviewableMixin.DEFAULT_PREVIEW_MODES + [("blog_post", _("Blog post"))]
+
     def __str__(self):
         return "{} {}".format(self.first_name, self.last_name)
+
+    def get_preview_template(self, request, mode_name):
+        if mode_name == "blog_post":
+            return BlogPage.template
+        return "base/people_preview.html"
+
+    def get_preview_context(self, request, mode_name):
+        context = super().get_preview_context(request, mode_name)
+        if mode_name == self.default_preview_mode:
+            return context
+
+        # Use the page authored by this person if available
+        page = BlogPage.objects.filter(blog_person_relationship__people=self).first()
+
+        # Otherwise, get the first page and simulate the person as the author
+        if not page:
+            page = BlogPage.objects.first()
+            page.authors = [self]
+
+        context["page"] = page
+        return context
 
     class Meta:
         verbose_name = "Person"
