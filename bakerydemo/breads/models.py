@@ -46,6 +46,8 @@ class BreadIngredient(DraftStateMixin, RevisionMixin, models.Model):
 
     panels = [
         FieldPanel("name"),
+        FieldPanel("go_live_at"),
+        FieldPanel("expire_at"),
     ]
 
     def __str__(self):

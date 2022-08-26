@@ -7,12 +7,12 @@ from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Collection, Page, PreviewableMixin, TranslatableMixin
+from wagtail.models import Collection, Page, PreviewableMixin, TranslatableMixin, DraftStateMixin, RevisionMixin, \
+    Orderable
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 
 from bakerydemo.blog.models import BlogPage
-
 from .blocks import BaseStreamBlock
 
 
@@ -129,7 +129,7 @@ class FooterText(models.Model):
 
 
 @register_snippet
-class SomeText(TranslatableMixin, models.Model):
+class SomeText(TranslatableMixin, DraftStateMixin, RevisionMixin, Orderable, models.Model):
     """
     This provides editable text for the site footer. Again it uses the decorator
     `register_snippet` to allow it to be accessible via the admin. It is made
@@ -139,14 +139,18 @@ class SomeText(TranslatableMixin, models.Model):
     body = RichTextField()
 
     panels = [
+        FieldRowPanel([
+            FieldPanel('go_live_at'),
+            FieldPanel('expire_at'),
+        ]),
         FieldPanel('body'),
     ]
 
     def __str__(self):
-        return "Footer text"
+        return "Some Text"
 
     class Meta(TranslatableMixin.Meta):
-        verbose_name_plural = 'Footer Text'
+        verbose_name_plural = 'Some Texts'
 
 
 class StandardPage(Page):
@@ -252,7 +256,7 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
         help_text="First featured section for the homepage. Will display up to "
-        "three child items.",
+                  "three child items.",
         verbose_name="Featured section 1",
     )
 
@@ -266,7 +270,7 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
         help_text="Second featured section for the homepage. Will display up to "
-        "three child items.",
+                  "three child items.",
         verbose_name="Featured section 2",
     )
 
@@ -280,7 +284,7 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name="+",
         help_text="Third featured section for the homepage. Will display up to "
-        "six child items.",
+                  "six child items.",
         verbose_name="Featured section 3",
     )
 
