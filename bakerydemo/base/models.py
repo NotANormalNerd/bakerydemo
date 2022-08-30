@@ -149,7 +149,7 @@ class SomeText(TranslatableMixin, DraftStateMixin, RevisionMixin, Orderable, mod
     def __str__(self):
         return "Some Text"
 
-    class Meta(TranslatableMixin.Meta):
+    class Meta(TranslatableMixin.Meta, Orderable.Meta):
         verbose_name_plural = 'Some Texts'
 
 
